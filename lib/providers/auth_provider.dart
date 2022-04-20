@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:books_app/models/user.dart';
 import 'package:books_app/services/auth.dart';
+import 'package:books_app/services/client.dart';
 import 'package:flutter/material.dart';
 import 'package:jwt_decode/jwt_decode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,6 +15,9 @@ class AuthProvider extends ChangeNotifier {
     getToken();
     if (token.isNotEmpty && Jwt.getExpiryDate(token)!.isAfter(DateTime.now())) {
       user = User.fromJson(Jwt.parseJwt(token));
+      Client.dio.options.headers = {
+        HttpHeaders.authorizationHeader: 'Bearer $token',
+      };
       return true;
     }
     logout();
